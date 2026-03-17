@@ -41,7 +41,7 @@ Validate patient data across completeness, accuracy, timeliness, and clinical pl
 ### Backend
 
 ```bash
-cd clinical-reconciliation/backend
+cd backend
 python -m venv .venv
 source .venv/bin/activate   # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
@@ -71,7 +71,7 @@ API docs: http://localhost:8000/docs
 ### Frontend
 
 ```bash
-cd clinical-reconciliation/frontend
+cd frontend
 npm install
 npm run dev
 ```
@@ -81,8 +81,7 @@ Frontend: http://localhost:5173 — Vite proxies `/api` to the backend.
 ### Docker
 
 ```bash
-cd clinical-reconciliation
-# Ensure backend/.env exists with API_KEY and ANTHROPIC_API_KEY
+# From repo root; ensure backend/.env exists with API_KEY and ANTHROPIC_API_KEY
 docker compose up --build
 ```
 
@@ -221,7 +220,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for a brief rationale of key te
 ## Running Tests
 
 ```bash
-cd clinical-reconciliation/backend
+cd backend
 API_KEY=test-key .venv/bin/pytest tests/ -v
 ```
 
