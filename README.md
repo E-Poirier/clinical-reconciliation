@@ -182,13 +182,13 @@ Raw score clamped to [0, 1]. See `backend/src/utils/confidence.py`.
 
 | Phase | Time |
 |-------|------|
-| Phase 1: Scaffolding, models, API | ~2–3 h |
-| Phase 2: Scoring, rules, confidence, tests | ~2–3 h |
-| Phase 3: LLM integration, prompts, services | ~3–4 h |
-| Phase 4: Frontend dashboard | ~3–4 h |
+| Phase 1: Scaffolding, models, API | ~1–2 h |
+| Phase 2: Scoring, rules, confidence, tests | ~1–2 h |
+| Phase 3: LLM integration, prompts, services | ~1–2 h |
+| Phase 4: Frontend dashboard | ~1–2 h |
 | Phase 5: Docker | ~1 h |
 | Phase 6: Documentation | ~1–2 h |
-| **Total** | **~12–17 h** |
+| **Total** | **~6–11 h** |
 
 ---
 
