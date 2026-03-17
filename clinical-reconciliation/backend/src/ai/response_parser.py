@@ -55,3 +55,31 @@ def parse_reconcile_response(
             recommended_actions=["Manually verify medication list"],
             clinical_safety_check="Unable to perform safety check due to validation error.",
         )
+
+
+def parse_data_quality_plausibility(
+    raw: str,
+) -> list[dict[str, Any]]:
+    """Parse LLM plausibility response into list of {field, plausible, reasoning, suggested_severity}.
+
+    Returns empty list on parse failure (caller uses rule-based issues only).
+    """
+    try:
+        cleaned = _strip_markdown_fences(raw)
+        data = json.loads(cleaned)
+    except (json.JSONDecodeError, TypeError):
+        return []
+
+    if not isinstance(data, list):
+        return []
+
+    result: list[dict[str, Any]] = []
+    for item in data:
+        if isinstance(item, dict):
+            result.append({
+                "field": str(item.get("field", "")),
+                "plausible": bool(item.get("plausible", True)),
+                "reasoning": str(item.get("reasoning", "")),
+                "suggested_severity": str(item.get("suggested_severity", "medium")),
+            })
+    return result

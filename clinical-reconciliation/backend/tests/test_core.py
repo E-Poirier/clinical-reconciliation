@@ -98,3 +98,30 @@ def test_llm_response_parser_handles_malformed_json() -> None:
     assert result.reconciled_medication == "Fallback Med"
     assert result.confidence_score == 0.0
     assert "malformed" in result.reasoning.lower()
+
+
+def test_reconcile_endpoint_returns_valid_response() -> None:
+    """Reconcile endpoint returns valid response with API key (deterministic when no LLM key)."""
+    client = TestClient(app)
+    response = client.post(
+        "/api/reconcile/medication",
+        json={
+            "patient_context": {"age": 65, "conditions": [], "recent_labs": None},
+            "sources": [
+                {
+                    "system": "ehr",
+                    "medication": "Metformin 500mg",
+                    "last_updated": datetime.now().isoformat(),
+                    "source_reliability": "high",
+                }
+            ],
+        },
+        headers={"x-api-key": "test-key-123"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert "reconciled_medication" in data
+    assert "confidence_score" in data
+    assert 0 <= data["confidence_score"] <= 1
+    assert "reasoning" in data
+    assert "clinical_safety_check" in data
