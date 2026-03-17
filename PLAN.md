@@ -1,6 +1,6 @@
 # Clinical Data Reconciliation Engine — Implementation Plan
 
- EHR Integration Intern Take-Home Assessment 
+Full Stack Developer - EHR Integration Intern Take-Home Assessment
 
 ---
 
@@ -58,11 +58,11 @@ flowchart TB
 
 ### 1.1 Project Structure
 
-Create the directory tree as specified in the outline:
+Create the directory tree at repo root (no nested `clinical-reconciliation/` folder):
 
-- `clinical-reconciliation/backend/` — FastAPI app, services, models, AI layer
-- `clinical-reconciliation/backend/src/data/` — PyHealth adapter for test data (Patient/Event → Pydantic)
-- `clinical-reconciliation/frontend/` — React + Vite app
+- `backend/` — FastAPI app, services, models, AI layer
+- `backend/src/data/` — PyHealth adapter for test data (Patient/Event → Pydantic)
+- `frontend/` — React + Vite app
 
 ### 1.2 Pydantic Models (`backend/src/models/`)
 
@@ -215,8 +215,8 @@ Document weight rationale in README.
 
 ### 5.2 docker-compose.yml
 
-- Wire backend + frontend with env vars
-- Ensure frontend can reach backend API
+- At repo root; wire backend + frontend with env vars
+- Ensure frontend can reach backend API (VITE_API_BACKEND for proxy)
 
 ---
 
