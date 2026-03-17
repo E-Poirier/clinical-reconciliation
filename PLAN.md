@@ -1,6 +1,6 @@
 # Clinical Data Reconciliation Engine — Implementation Plan
 
-This plan aligns with the Full Stack Developer - EHR Integration Intern Take-Home Assessment and the EHR_outline.md.
+ EHR Integration Intern Take-Home Assessment 
 
 ---
 
