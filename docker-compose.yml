@@ -3,6 +3,7 @@
 # Frontend: http://localhost:5173  |  Backend API: http://localhost:8000
 #
 # Prerequisites: Copy backend/.env.example to backend/.env and set API_KEY, ANTHROPIC_API_KEY
+# For Docker: .env at project root (symlink: ln -sf backend/.env .env) so env vars reach the container
 
 services:
   backend:
@@ -12,7 +13,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./backend/.env
+      - .env
 
   frontend:
     build:
