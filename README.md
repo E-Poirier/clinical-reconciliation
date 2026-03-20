@@ -82,7 +82,6 @@ Frontend: http://localhost:5173 — Vite proxies `/api` to the backend.
 
 ```bash
 # From repo root; ensure backend/.env exists with API_KEY and ANTHROPIC_API_KEY
-# Docker reads .env from project root — create symlink if needed: ln -sf backend/.env .env
 docker compose up --build
 ```
 

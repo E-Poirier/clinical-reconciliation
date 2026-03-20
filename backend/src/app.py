@@ -83,6 +83,16 @@ async def validate_data_quality(
 app.include_router(router)
 
 
+@app.get("/health")
+async def health():
+    """Health check; no auth. Use to verify API_KEY and ANTHROPIC_API_KEY are loaded in Docker."""
+    return {
+        "status": "ok",
+        "api_key_configured": bool(os.getenv("API_KEY")),
+        "anthropic_configured": bool(os.getenv("ANTHROPIC_API_KEY")),
+    }
+
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Ensure structured error responses."""
