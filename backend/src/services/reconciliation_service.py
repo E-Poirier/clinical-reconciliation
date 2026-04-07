@@ -1,4 +1,4 @@
-"""Reconciliation pipeline: score_sources → LLM → confidence → ReconcileResponse."""
+"""Medication reconciliation: rank sources, optionally call the LLM, then return a scored response."""
 
 import os
 
@@ -8,8 +8,10 @@ from ..ai.response_parser import parse_reconcile_response
 from ..models import ReconcileRequest, ReconcileResponse
 from ..utils import compute_confidence, score_sources
 
+# Matches utils.scoring.RELIABILITY_WEIGHTS — numeric weight for compute_confidence()
+SOURCE_RELIABILITY_SCORE = {"high": 1.0, "medium": 0.6, "low": 0.3}
 
-# Number of top candidates to send to LLM (minimize tokens)
+# How many ranked sources to include in the LLM user prompt (token budget).
 TOP_CANDIDATES_COUNT = 3
 
 
@@ -17,13 +19,12 @@ def _deterministic_fallback(
     request: ReconcileRequest,
     llm_reason: str | None = None,
 ) -> ReconcileResponse:
-    """Fallback when LLM is unavailable (no API key or error)."""
+    """Return the best ranked source when the LLM is skipped or errors."""
     scored = score_sources(request.sources, request.patient_context)
     top_source, top_score = scored[0]
-    reliability_map = {"high": 1.0, "medium": 0.6, "low": 0.3}
     confidence = compute_confidence(
         recency_score=min(1.0, top_score),
-        source_reliability=reliability_map[top_source.source_reliability],
+        source_reliability=SOURCE_RELIABILITY_SCORE[top_source.source_reliability],
         clinical_alignment=1.0,
         pharmacy_consistency=0.5 if not top_source.last_filled else 0.8,
     )
@@ -38,7 +39,7 @@ def _deterministic_fallback(
 
 
 class ReconciliationService:
-    """Orchestrates medication reconciliation with LLM and deterministic fallback."""
+    """Coordinates ranking, optional LLM reconciliation, and confidence blending."""
 
     def __init__(self, llm_client: LLMClient | None = None) -> None:
         self._llm = llm_client
@@ -46,7 +47,7 @@ class ReconciliationService:
             self._llm = LLMClient()
 
     def reconcile(self, request: ReconcileRequest) -> ReconcileResponse:
-        """Run full reconciliation: score → LLM → parse → confidence adjustment."""
+        """Rank sources, call the LLM when configured, blend confidence with deterministic score."""
         scored = score_sources(request.sources, request.patient_context)
         top_candidates = scored[:TOP_CANDIDATES_COUNT]
         top_source, top_score = scored[0]
@@ -67,15 +68,13 @@ class ReconciliationService:
                 raw,
                 fallback_medication=top_source.medication,
             )
-            # Optionally blend LLM confidence with deterministic score
-            reliability_map = {"high": 1.0, "medium": 0.6, "low": 0.3}
             det_confidence = compute_confidence(
                 recency_score=min(1.0, top_score),
-                source_reliability=reliability_map[top_source.source_reliability],
+                source_reliability=SOURCE_RELIABILITY_SCORE[top_source.source_reliability],
                 clinical_alignment=1.0,
                 pharmacy_consistency=0.5 if not top_source.last_filled else 0.8,
             )
-            # Use average of LLM and deterministic for robustness
+            # Average LLM and deterministic confidence for stability when both are available
             blended = round(
                 (parsed.confidence_score + det_confidence) / 2.0, 2
             )

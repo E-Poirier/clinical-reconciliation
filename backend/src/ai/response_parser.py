@@ -1,9 +1,7 @@
-"""Parse LLM JSON responses with fallback for malformed output.
+"""Parse LLM JSON into API models.
 
-- Strip markdown code fences if present
-- json.loads() with try/except
-- Validate against Pydantic model
-- Fallback to deterministic result if malformed
+Strips optional Markdown code fences, parses JSON, and builds Pydantic responses.
+On decode or shape errors, returns safe fallbacks so callers never crash on bad model output.
 """
 
 import json

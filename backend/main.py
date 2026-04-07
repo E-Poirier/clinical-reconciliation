@@ -1,13 +1,12 @@
-"""Entry point for running the FastAPI application."""
+"""CLI entrypoint: loads environment variables then runs Uvicorn with hot reload."""
 
 from pathlib import Path
 
+import uvicorn
 from dotenv import load_dotenv
 
-# Load .env before uvicorn starts (so API_KEY, ANTHROPIC_API_KEY are available)
-load_dotenv(Path(__file__).parent / ".env")
-
-import uvicorn
+# Load backend/.env before the app module is imported (API_KEY, ANTHROPIC_API_KEY, etc.).
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 if __name__ == "__main__":
     uvicorn.run(
@@ -16,5 +15,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True,
         reload_excludes=[".venv", ".git"],
-       
     )

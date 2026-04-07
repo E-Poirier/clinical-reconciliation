@@ -1,6 +1,6 @@
 /**
- * API client for Clinical Data Reconciliation Engine.
- * Proxies /api to backend (see vite.config.js).
+ * HTTP helpers for the Clinical Data Reconciliation Engine.
+ * In dev, Vite proxies `/api` to the backend (see vite.config.js).
  */
 
 import axios from 'axios';
@@ -8,8 +8,7 @@ import axios from 'axios';
 const API_BASE = '/api';
 
 /**
- * Create axios instance with API key header.
- * @param {string} apiKey - API key for authentication (x-api-key)
+ * @param {string} [apiKey] - Sent as `x-api-key` when present
  */
 export function createClient(apiKey) {
   return axios.create({

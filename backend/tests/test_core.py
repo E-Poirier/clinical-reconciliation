@@ -1,4 +1,4 @@
-"""Unit tests for core logic (Phase 2 — assignment: ≥5 tests)."""
+"""Tests for scoring, clinical rules, API auth, reconciliation parsing, and the reconcile endpoint."""
 
 from datetime import datetime, timedelta
 

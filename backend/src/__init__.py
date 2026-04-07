@@ -1,1 +1,1 @@
-"""Clinical Reconciliation Engine backend."""
+"""Backend package for the Clinical Data Reconciliation Engine."""

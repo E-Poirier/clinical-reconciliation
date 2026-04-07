@@ -1,4 +1,4 @@
-"""Data quality pipeline: rule-based checks → LLM on flagged fields → DataQualityResponse."""
+"""Data quality validation: clinical rules first, then optional LLM plausibility on flagged items."""
 
 import os
 from datetime import datetime
@@ -18,8 +18,10 @@ def _compute_breakdown_from_issues(
     issues: list[IssueDetected],
     last_updated: datetime | None,
 ) -> QualityBreakdown:
-    """Compute dimension scores from issues and last_updated.
-    Multiple high-severity issues drive the score lower (2+ high = Poor)."""
+    """Derive per-dimension scores from rule (and merged LLM) issues and record age.
+
+    Two or more high-severity issues cap all dimensions sharply (treated as unreliable data).
+    """
     completeness = 70
     accuracy = 80
     timeliness = 75
@@ -51,7 +53,7 @@ def _compute_breakdown_from_issues(
             completeness = min(completeness, 80)
             accuracy = min(accuracy, 85)
 
-    # 2+ high-severity issues = data is unreliable; cap all dimensions lower
+    # Multiple critical findings: cap every dimension
     if high_count >= 2:
         completeness = min(completeness, 35)
         accuracy = min(accuracy, 35)
@@ -115,7 +117,8 @@ class ValidationService:
                                 severity=suggested,
                             )
             except Exception:
-                pass  # Use rule-based issues only
+                # Keep rule-based issues only if the LLM call or parse fails
+                pass
 
         breakdown = _compute_breakdown_from_issues(
             issues,

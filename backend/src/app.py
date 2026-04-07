@@ -1,14 +1,10 @@
-"""FastAPI application for Clinical Data Reconciliation Engine."""
+"""FastAPI application for the Clinical Data Reconciliation Engine."""
 
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from dotenv import load_dotenv
-
-# Load .env so API_KEY and ANTHROPIC_API_KEY are available
-load_dotenv(Path(__file__).resolve().parents[1] / ".env")
-from contextlib import asynccontextmanager
-
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.security import APIKeyHeader
@@ -16,11 +12,14 @@ from fastapi.security import APIKeyHeader
 from .models import DataQualityRequest, DataQualityResponse, ReconcileRequest, ReconcileResponse
 from .services import ReconciliationService, ValidationService
 
+# Same backend/.env as main.py; must run before service singletons below read ANTHROPIC_API_KEY / API_KEY.
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+
 API_KEY_HEADER = APIKeyHeader(name="x-api-key", auto_error=False)
 
 
 def validate_api_key(api_key: str | None = Depends(API_KEY_HEADER)) -> str:
-    """Validate API key against environment variable."""
+    """Require a valid ``x-api-key`` matching the ``API_KEY`` environment variable."""
     expected = os.getenv("API_KEY")
     if not expected:
         raise HTTPException(
@@ -36,8 +35,8 @@ def validate_api_key(api_key: str | None = Depends(API_KEY_HEADER)) -> str:
 
 
 @asynccontextmanager
-async def lifespan(app):
-    """Application lifespan handler."""
+async def lifespan(app: FastAPI):
+    """Reserved for startup/shutdown hooks (DB pools, etc.); currently a no-op."""
     yield
 
 
@@ -95,7 +94,7 @@ async def health():
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
-    """Ensure structured error responses."""
+    """Serialize ``HTTPException`` as JSON with a ``detail`` field for consistent clients."""
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail},

@@ -9,7 +9,7 @@ Per PLAN.md:
 """
 
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any
 
 from ..models.data_quality import IssueDetected
 

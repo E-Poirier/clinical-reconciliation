@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import ReconciliationCard from './components/ReconciliationCard';
 import DataQualityPanel from './components/DataQualityPanel';
+import ReconciliationCard from './components/ReconciliationCard';
 
+/** Root layout: API key entry and the two demo panels (reconcile + data quality). */
 function App() {
   const [apiKey, setApiKey] = useState(() => {
     return typeof window !== 'undefined' ? localStorage.getItem('apiKey') || '' : '';

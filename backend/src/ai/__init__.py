@@ -1,4 +1,4 @@
-"""AI/LLM integration layer (Phase 3)."""
+"""LLM client, prompts, and response parsing for reconciliation and data quality."""
 
 from .llm_client import LLMClient
 from .prompts import (
